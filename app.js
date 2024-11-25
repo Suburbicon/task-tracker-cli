@@ -18,7 +18,7 @@ function addTask(taskDescription) {
 	const idTask = crypto.randomBytes(8).toString('hex');
 	const task = {
 		id: idTask,
-		description: taskDescription.join(' '),
+		description: taskDescription,
 		status: STATUSES.TODO,
 		createdAt: new Date(),
 		updatedAt: new Date()
@@ -34,7 +34,29 @@ function addTask(taskDescription) {
 
 		console.log('Object added successfully!');
 	} catch (error) {
-		console.error('Error handling the JSON file:', err);
+		console.error('Error handling the JSON file: ', error);
+	}
+}
+
+function updateTask(id, taskDescription) {
+	try {
+		const data = fs.readFileSync(filePath, 'utf8');
+		const jsonData = JSON.parse(data);
+
+		let existedTask = jsonData.find(jd => jd.id === id);
+
+		if (!existedTask) {
+			console.info(`Not found task by id: ${id}`);
+		} else {
+			existedTask.description = taskDescription;
+			existedTask.updateAt = new Date();
+
+			fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2), 'utf8');
+
+			console.log('Object updated successfully!');
+		}
+	} catch (error) {
+		console.error('Error handling the JSON file: ', error)
 	}
 }
 
@@ -49,10 +71,11 @@ async function main() {
 				console.log('Goodbye!');
       	rl.close();
 			case 'add':
-				addTask(value);
+				addTask(value.join(' '));
 				break;
 			case 'update':
-				console.log('add');
+				const [id, ...description] = value;
+				updateTask(id, description.join(' '));
 				break;
 			case 'delete':
 				console.log('add');
