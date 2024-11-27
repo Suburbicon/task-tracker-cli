@@ -53,7 +53,27 @@ function updateTask(id, taskDescription) {
 
 			fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2), 'utf8');
 
-			console.log('Object updated successfully!');
+			console.log('Task updated successfully!');
+		}
+	} catch (error) {
+		console.error('Error handling the JSON file: ', error)
+	}
+}
+
+function deleteTask(id) {
+	try {
+		const data = fs.readFileSync(filePath, 'utf8');
+		const jsonData = JSON.parse(data);
+
+		let existedTask = jsonData.find(jd => jd.id === id);
+
+		if (!existedTask) {
+			console.info(`Not found task by id: ${id}`);
+		} else {
+			const updatedJsonData = jsonData.filter(jd => jd.id !== id);
+			fs.writeFileSync(filePath, JSON.stringify(updatedJsonData, null, 2), 'utf8');
+
+			console.log('Task deleted successfully!');
 		}
 	} catch (error) {
 		console.error('Error handling the JSON file: ', error)
@@ -64,7 +84,8 @@ async function main() {
 	try {
 		const userInput = await inputHandler('task-cli: ');
 
-		const [command, ...value] = userInput.split(' ')
+		const [command, ...value] = userInput.split(' ');
+		const [id, ...description] = value;
 		
 		switch(command) {
 			case 'q':
@@ -74,11 +95,10 @@ async function main() {
 				addTask(value.join(' '));
 				break;
 			case 'update':
-				const [id, ...description] = value;
 				updateTask(id, description.join(' '));
 				break;
 			case 'delete':
-				console.log('add');
+				deleteTask(id);
 				break;
 			case 'mark-in-progress':
 				console.log('add');
@@ -87,7 +107,10 @@ async function main() {
 				console.log('add');
 				break;
 			case 'list':
-				console.log('add');
+				const data = fs.readFileSync(filePath, 'utf8');
+				console.log('LIST TASKS 📝: ');
+				console.info(JSON.parse(data));
+				console.log('\n');
 				break;
 			case 'list done':
 				console.log('add');
