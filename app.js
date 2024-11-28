@@ -108,9 +108,16 @@ async function main() {
 				break;
 			case 'list':
 				const data = fs.readFileSync(filePath, 'utf8');
-				console.log('LIST TASKS 📝: ');
-				console.info(JSON.parse(data));
-				console.log('\n');
+				console.log('\nLIST TASKS 📝: ');
+				JSON.parse(data).forEach((task, n) => {
+					console.log(`№${n+1}.`)
+					console.log(`id: ${task.id}`);
+					console.log(`description: ${task.description}`);
+					console.log(`status: ${task.status}`);
+					console.log(`created at: ${task.createdAt}`);
+					console.log(`updated at: ${task.updatedAt}`);
+					console.log('\n');
+				})
 				break;
 			case 'list done':
 				console.log('add');
