@@ -76,13 +76,104 @@ function deleteTask(id) {
 			console.log('Task deleted successfully!');
 		}
 	} catch (error) {
-		console.error('Error handling the JSON file: ', error)
+		console.error('Error handling the JSON file: ', error);
+	}
+}
+
+function serializeDiplayTask(data) {
+	data.forEach((task, n) => {
+		console.log(`№${n+1}.`)
+		console.log(`id: ${task.id}`);
+		console.log(`description: ${task.description}`);
+		console.log(`status: ${task.status}`);
+		console.log(`created at: ${task.createdAt}`);
+		console.log(`updated at: ${task.updatedAt}`);
+		console.log('\n');
+	});
+}
+
+function displayList() {
+	try {
+		const data = fs.readFileSync(filePath, 'utf8');
+		console.log('\nLIST TASKS 📝: ');
+		serializeDiplayTask(data);
+	} catch (error) {
+		console.error('Error handling the JSON file: ', error);
+	}
+}
+
+function displayListInDone() {
+	try {
+		const data = fs.readFileSync(filePath, 'utf8');
+		console.log('\nLIST TASKS IN DONE 📝: ');
+		const filteredData = JSON.parse(data).filter(d => d.status === STATUSES.DONE);
+		serializeDiplayTask(filteredData);
+	} catch (error) {
+		console.error('Error handling the JSON file: ', error);
+	}
+}
+
+function displayListInProgress() {
+	try {
+		const data = fs.readFileSync(filePath, 'utf8');
+		console.log('\nLIST TASKS IN PROGRESS 📝: ');
+		serializeDiplayTask(data.filter(d => d.status === STATUSES.IN_PROGRESS));
+	} catch (error) {
+		console.error('Error handling the JSON file: ', error);
+	}
+}
+
+function displayListInTodo() {
+	try {
+		const data = fs.readFileSync(filePath, 'utf8');
+		console.log('\nLIST TASKS IN TODO 📝: ');
+		serializeDiplayTask(data.filter(d => d.status === STATUSES.TODO));
+	} catch (error) {
+		console.error('Error handling the JSON file: ', error);
+	}
+}
+
+function markInProgress(id) {
+	try {
+		const data = fs.readFileSync(filePath, 'utf8');
+		const jsonData = JSON.parse(data);
+
+		const existedTask = jsonData.find(jd => jd.id === id);
+
+		if (!existedTask) {
+			console.info(`Not found task by id: ${id}`);
+		} else {
+			existedTask.status = STATUSES.IN_PROGRESS;
+			console.log('Task marked as IN PROGRESS');
+			fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2), 'utf8');
+		}
+	} catch (error) {
+		console.error('Error handling the JSON file: ', error);
+	}
+}
+
+function markInDone(id) {
+	try {
+		const data = fs.readFileSync(filePath, 'utf8');
+		const jsonData = JSON.parse(data);
+
+		const existedTask = jsonData.find(jd => jd.id === id);
+
+		if (!existedTask) {
+			console.info(`Not found task by id: ${id}`);
+		} else {
+			existedTask.status = STATUSES.DONE;
+			console.log('Task marked as IN DONE');
+			fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2), 'utf8');
+		}
+	} catch (error) {
+		console.error('Error handling the JSON file: ', error);
 	}
 }
 
 async function main() {
 	try {
-		const userInput = await inputHandler('task-cli: ');
+		const userInput = await inputHandler('\ntask-cli: ');
 
 		const [command, ...value] = userInput.split(' ');
 		const [id, ...description] = value;
@@ -101,32 +192,22 @@ async function main() {
 				deleteTask(id);
 				break;
 			case 'mark-in-progress':
-				console.log('add');
+				markInProgress(id);
 				break;
 			case 'mark-in-done':
-				console.log('add');
+				markInDone(id);
 				break;
 			case 'list':
-				const data = fs.readFileSync(filePath, 'utf8');
-				console.log('\nLIST TASKS 📝: ');
-				JSON.parse(data).forEach((task, n) => {
-					console.log(`№${n+1}.`)
-					console.log(`id: ${task.id}`);
-					console.log(`description: ${task.description}`);
-					console.log(`status: ${task.status}`);
-					console.log(`created at: ${task.createdAt}`);
-					console.log(`updated at: ${task.updatedAt}`);
-					console.log('\n');
-				})
+				displayList();
 				break;
 			case 'list done':
-				console.log('add');
+				displayListInDone();
 				break;
 			case 'list todo':
-				console.log('add');
+				displayListInTodo();
 				break;
 			case 'list in-progress':
-				console.log('add');
+				displayListInProgress();
 				break;
 			default: 
 				console.log('Unknowm command ❌, Please try again...')
