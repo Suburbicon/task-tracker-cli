@@ -96,7 +96,7 @@ function displayList() {
 	try {
 		const data = fs.readFileSync(filePath, 'utf8');
 		console.log('\nLIST TASKS 📝: ');
-		serializeDiplayTask(data);
+		serializeDiplayTask(JSON.parse(data));
 	} catch (error) {
 		console.error('Error handling the JSON file: ', error);
 	}
@@ -117,7 +117,8 @@ function displayListInProgress() {
 	try {
 		const data = fs.readFileSync(filePath, 'utf8');
 		console.log('\nLIST TASKS IN PROGRESS 📝: ');
-		serializeDiplayTask(data.filter(d => d.status === STATUSES.IN_PROGRESS));
+		const filteredData = JSON.parse(data).filter(d => d.status === STATUSES.IN_PROGRESS);
+		serializeDiplayTask(filteredData);
 	} catch (error) {
 		console.error('Error handling the JSON file: ', error);
 	}
@@ -127,7 +128,8 @@ function displayListInTodo() {
 	try {
 		const data = fs.readFileSync(filePath, 'utf8');
 		console.log('\nLIST TASKS IN TODO 📝: ');
-		serializeDiplayTask(data.filter(d => d.status === STATUSES.TODO));
+		const filteredData = JSON.parse(data).filter(d => d.status === STATUSES.TODO);
+		serializeDiplayTask(filteredData);
 	} catch (error) {
 		console.error('Error handling the JSON file: ', error);
 	}
@@ -177,7 +179,7 @@ async function main() {
 
 		const [command, ...value] = userInput.split(' ');
 		const [id, ...description] = value;
-		
+
 		switch(command) {
 			case 'q':
 				console.log('Goodbye!');
@@ -200,13 +202,13 @@ async function main() {
 			case 'list':
 				displayList();
 				break;
-			case 'list done':
+			case 'list-done':
 				displayListInDone();
 				break;
-			case 'list todo':
+			case 'list-todo':
 				displayListInTodo();
 				break;
-			case 'list in-progress':
+			case 'list-in-progress':
 				displayListInProgress();
 				break;
 			default: 

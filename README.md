@@ -16,6 +16,6 @@ mark-done 1
 list
 
 ## Listing tasks by status
-list done
-list todo
-list in-progress
+list-done
+list-todo
+list-in-progress
